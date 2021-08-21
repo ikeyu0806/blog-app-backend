@@ -1,19 +1,21 @@
 version: '3.7'
 services:
   blog-app-backend-server:
+    container_name: blog-app-backend-server
     build: ./
+    env_file: ./env.local
     volumes:
       - ./app/:/app/
-      - /var/run/docker.sock:/var/run/docker.sock
     ports:
       - 6000:80
     depends_on:
       - blog-app-db
 
   blog-app-db:
+    container_name: blog-app-db
     build: ./postgresql
+    env_file: ./env.local
     volumes:
       - ./postgresql/data:/var/lib/postgresql/data
     ports:
       - 55432:5432
-
