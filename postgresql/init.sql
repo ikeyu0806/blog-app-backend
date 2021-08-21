@@ -25,8 +25,8 @@ CREATE TABLE IF NOT EXISTS users (
 
 CREATE TABLE IF NOT EXISTS relations (
   id serial NOT NULL,
-  follow_id INT,
-  follower_id INT,
+  follow_id INT REFERENCES users(id),
+  follower_id INT REFERENCES users(id),
   created_at TIMESTAMP NOT NULL,
   updated_at TIMESTAMP NOT NULL,
   PRIMARY KEY (id)
@@ -34,8 +34,8 @@ CREATE TABLE IF NOT EXISTS relations (
 
 CREATE TABLE IF NOT EXISTS likes (
   id serial NOT NULL,
-  user_id INT,
-  post_id INT,
+  user_id INT REFERENCES users(id),
+  post_id INT REFERENCES posts(id),
   created_at TIMESTAMP NOT NULL,
   updated_at TIMESTAMP NOT NULL,
   PRIMARY KEY (id)
@@ -46,8 +46,8 @@ CREATE INDEX ON likes (user_id, post_id);
 CREATE TABLE IF NOT EXISTS comments (
   id serial NOT NULL,
   content VARCHAR(400) NOT NULL,
-  user_id INT,
-  post_id INT NOT NULL,
+  user_id INT REFERENCES users(id),
+  post_id INT NOT NULL REFERENCES posts(id),
   created_at TIMESTAMP NOT NULL,
   updated_at TIMESTAMP NOT NULL,
   PRIMARY KEY (id)
@@ -67,8 +67,8 @@ CREATE INDEX ON categories (name);
 
 CREATE TABLE IF NOT EXISTS post_categories (
   id serial NOT NULL,
-  post_id INT,
-  category_id INT,
+  post_id INT REFERENCES posts(id),
+  category_id INT REFERENCES categories(id),
   created_at TIMESTAMP NOT NULL,
   updated_at TIMESTAMP NOT NULL,
   PRIMARY KEY (id)
