@@ -7,7 +7,7 @@ services:
     volumes:
       - ./app/:/app/
     ports:
-      - 6000:80
+      - 5001:80
     depends_on:
       - blog-app-db
 
