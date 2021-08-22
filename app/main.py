@@ -26,7 +26,7 @@ def create_post():
 
     with db.get_connection() as conn:
         with conn.cursor() as cur:
-            cur.execute('INSERT INTO posts (title, content) VALUES (%s, %s, %s, %s)', ('title', 'content', dt, dt))
+            cur.execute('INSERT INTO posts (title, content, created_at, updated_at) VALUES (%s, %s, %s, %s)', ('title', 'content', dt, dt))
         conn.commit()
     return {"create_post": "create_post"}
 
