@@ -4,3 +4,5 @@ RUN /usr/local/bin/python -m pip install --upgrade pip
 
 COPY ./app /app
 RUN pip install -r requirements.txt
+
+CMD /start-reload.sh
