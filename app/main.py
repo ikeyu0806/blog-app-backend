@@ -1,7 +1,7 @@
-from typing import Optional
+from pydantic import BaseModel
 import datetime
 
-from fastapi import FastAPI
+from fastapi import FastAPI, Form
 from fastapi.middleware.cors import CORSMiddleware
 
 from infrastructure import db
@@ -20,16 +20,16 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+class Post(BaseModel):
+    title: str
+    content: str
+
 @app.post("/create_post")
-def create_post():
+def create_post(post: Post):
     dt = datetime.datetime.now()
 
     with db.get_connection() as conn:
         with conn.cursor() as cur:
-            cur.execute('INSERT INTO posts (title, content, created_at, updated_at) VALUES (%s, %s, %s, %s)', ('title', 'content', dt, dt))
+            cur.execute('INSERT INTO posts (title, content, created_at, updated_at) VALUES (%s, %s, %s, %s)', (post.title, post.content, dt, dt))
         conn.commit()
-    return {"create_post": "create_post"}
-
-@app.get("/items/{item_id}")
-def read_item(item_id: int, q: Optional[str] = None):
-    return {"item_id": item_id, "q": q}
+    return {"post": post}
