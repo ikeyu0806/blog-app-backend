@@ -1,5 +1,6 @@
 from pydantic import BaseModel
 import datetime
+import json
 
 from fastapi import FastAPI, Form
 from fastapi.middleware.cors import CORSMiddleware
@@ -33,3 +34,12 @@ def create_post(post: Post):
             cur.execute('INSERT INTO posts (title, content, created_at, updated_at) VALUES (%s, %s, %s, %s)', (post.title, post.content, dt, dt))
         conn.commit()
     return {"post": post}
+
+@app.get("/posts")
+def posts():
+    with db.get_connection() as conn:
+        with conn.cursor() as cur:
+            cur.execute('SELECT * FROM POSTS')
+            result = cur.fetchall()
+
+    return {'posts':result }
