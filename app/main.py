@@ -41,5 +41,9 @@ def posts():
         with conn.cursor() as cur:
             cur.execute('SELECT * FROM POSTS')
             result = cur.fetchall()
+            
+    key = ["id", "title", "content"]
+    result = [dict(zip(key, post)) for post in result]
+    print(result)
 
-    return {'posts':result }
+    return {'posts': result }
