@@ -15,8 +15,6 @@ CREATE TABLE IF NOT EXISTS users (
   email VARCHAR(50) NOT NULL,
   profile VARCHAR(400) NOT NULL,
   encrypted_password VARCHAR(50) NOT NULL,
-  user_id INT,
-  publish_status INT,
   authority_classification INT,
   created_at TIMESTAMP NOT NULL,
   updated_at TIMESTAMP NOT NULL,
