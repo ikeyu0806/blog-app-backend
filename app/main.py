@@ -57,20 +57,28 @@ def posts():
     key = ["id", "title", "content"]
     result = [dict(zip(key, post)) for post in result]
 
-    return {post: post }
+    return {post: post}
 
 @app.post("/create_user")
 def create_user(user: createUser):
-    dt = datetime.datetime.now()
-    encrypted_password = hashlib.sha256(user.password.encode('utf-8')).hexdigest()
+    try:
+        dt = datetime.datetime.now()
+        encrypted_password = hashlib.sha256(user.password.encode('utf-8')).hexdigest()
 
-    with db.get_connection() as conn:
-        with conn.cursor() as cur:
-            cur.execute('INSERT INTO users (name, email, encrypted_password, created_at, updated_at) VALUES (%s, %s, %s, %s, %s)', (user.name, user.email, encrypted_password, dt, dt))
-        conn.commit()
-    # sessionIdは本当はもう少し凝ったロジックで生成してストレージに保存したいけどとりあえずこの実装
-    sessionId = base64.b64encode(user.email.encode())
-    return {'sessionId': sessionId}
+        with db.get_connection() as conn:
+            with conn.cursor() as cur:
+                cur.execute('INSERT INTO users (name, email, encrypted_password, created_at, updated_at) VALUES (%s, %s, %s, %s, %s)', (user.name, user.email, encrypted_password, dt, dt))
+            conn.commit()
+
+        with db.get_connection() as conn:
+            with conn.cursor() as cur:
+                cur.execute('SELECT * FROM users WHERE email = %s AND encrypted_password = %s LIMIT 1', (user.email, encrypted_password))
+                result = cur.fetchone()
+        # sessionIdは本当はもう少し凝ったロジックで生成してストレージに保存したいけどとりあえずこの実装
+        sessionId = base64.b64encode(user.email.encode())
+        return {'sessionId': sessionId, 'user_name': result[1], 'user_id': result[0]}
+    except:
+        return {'errMessage': 'signup failure'}
 
 @app.post("/login")
 def login(user: loginUser):
@@ -79,12 +87,13 @@ def login(user: loginUser):
         with db.get_connection() as conn:
             with conn.cursor() as cur:
                 cur.execute('SELECT * FROM users WHERE email = %s AND encrypted_password = %s LIMIT 1', (user.email, encrypted_password))
-                result = cur.fetchall()
-        if len(result) == 0:
+                result = cur.fetchone()
+
+        if result is None:
             raise HTTPException(status_code=401, detail="User not exists")
 
         # sessionIdは本当はもう少し凝ったロジックで生成してストレージに保存したいけどとりあえずこの実装
         sessionId = base64.b64encode(user.email.encode())
-        return {'sessionId': sessionId}
+        return {'sessionId': sessionId, 'user_name': result[1], 'user_id': result[0]}
     except:
         return {'errMessage': 'login failure'}
