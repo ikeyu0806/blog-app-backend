@@ -59,6 +59,18 @@ def posts():
 
     return {'posts': result}
 
+@app.get("/post/{post_id}")
+def post_detail(post_id):
+    with db.get_connection() as conn:
+        with conn.cursor() as cur:
+            cur.execute('SELECT * FROM posts WHERE id = %s', (post_id))
+            result = cur.fetchone()
+
+    key = ["id", "title", "content"]
+    result = [dict(zip(key, list(result)))][0]
+
+    return {'post': result}
+
 @app.post("/create_user")
 def create_user(user: createUser):
     try:
