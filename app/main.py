@@ -1,6 +1,7 @@
 from pydantic import BaseModel
 import datetime
 import json
+import hashlib
 
 from fastapi import FastAPI, Form
 from fastapi.middleware.cors import CORSMiddleware
@@ -56,9 +57,10 @@ def posts():
 @app.post("/create_user")
 def create_user(user: User):
     dt = datetime.datetime.now()
+    encrypted_password = hashlib.sha256(user.password.encode('utf-8')).hexdigest()
 
     with db.get_connection() as conn:
         with conn.cursor() as cur:
-            cur.execute('INSERT INTO users (name, email, encrypted_password, created_at, updated_at) VALUES (%s, %s, %s, %s, %s)', (user.name, user.email, user.password, dt, dt))
+            cur.execute('INSERT INTO users (name, email, encrypted_password, created_at, updated_at) VALUES (%s, %s, %s, %s, %s)', (user.name, user.email, encrypted_password, dt, dt))
         conn.commit()
     return {"user": user}

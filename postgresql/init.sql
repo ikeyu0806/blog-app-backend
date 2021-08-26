@@ -14,7 +14,7 @@ CREATE TABLE IF NOT EXISTS users (
   name VARCHAR(50) NOT NULL,
   email VARCHAR(50) NOT NULL,
   profile VARCHAR(400),
-  encrypted_password VARCHAR(50) NOT NULL,
+  encrypted_password VARCHAR(1000) NOT NULL,
   authority_classification INT,
   created_at TIMESTAMP NOT NULL,
   updated_at TIMESTAMP NOT NULL,
