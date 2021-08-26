@@ -57,7 +57,7 @@ def posts():
     key = ["id", "title", "content"]
     result = [dict(zip(key, post)) for post in result]
 
-    return {post: post}
+    return {'posts': result}
 
 @app.post("/create_user")
 def create_user(user: createUser):
@@ -97,3 +97,15 @@ def login(user: loginUser):
         return {'sessionId': sessionId, 'user_name': result[1], 'user_id': result[0]}
     except:
         return {'errMessage': 'login failure'}
+
+@app.get("/users")
+def users():
+    with db.get_connection() as conn:
+        with conn.cursor() as cur:
+            cur.execute('SELECT * FROM users')
+            result = cur.fetchall()
+
+    key = ["id", "name"]
+    result = [dict(zip(key, user)) for user in result]
+
+    return {'users': result}
