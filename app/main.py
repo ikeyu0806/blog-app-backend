@@ -25,6 +25,11 @@ class Post(BaseModel):
     title: str
     content: str
 
+class User(BaseModel):
+    name: str
+    email: str
+    password: str
+
 @app.post("/create_post")
 def create_post(post: Post):
     dt = datetime.datetime.now()
@@ -47,3 +52,13 @@ def posts():
     print(result)
 
     return {'posts': result }
+
+@app.post("/create_user")
+def create_user(user: User):
+    dt = datetime.datetime.now()
+
+    with db.get_connection() as conn:
+        with conn.cursor() as cur:
+            cur.execute('INSERT INTO users (name, email, encrypted_password, created_at, updated_at) VALUES (%s, %s, %s, %s, %s)', (user.name, user.email, user.password, dt, dt))
+        conn.commit()
+    return {"user": user}
