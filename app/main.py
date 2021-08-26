@@ -80,7 +80,7 @@ def login(user: loginUser):
                 cur.execute('SELECT * FROM USERS WHERE(email = %s AND encrypted_password = %s)', (user.email, encrypted_password))
                 result = cur.fetchall()
         if len(result) == 0:
-            raise Exception
+            raise HTTPException(status_code=401, detail="User not exists")
         return {'sessionId': 'sessionId'}
     except:
-        return {'errMessage': 'error'}
+        return {'errMessage': 'login failure'}
