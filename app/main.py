@@ -3,6 +3,7 @@ import datetime
 import json
 import hashlib
 import traceback
+import base64
 
 from fastapi import FastAPI, Form
 from fastapi.middleware.cors import CORSMiddleware
@@ -52,12 +53,11 @@ def posts():
         with conn.cursor() as cur:
             cur.execute('SELECT * FROM POSTS')
             result = cur.fetchall()
-            
+
     key = ["id", "title", "content"]
     result = [dict(zip(key, post)) for post in result]
-    print(result)
 
-    return {'sessionId': 'sessionId' }
+    return {post: post }
 
 @app.post("/create_user")
 def create_user(user: createUser):
@@ -68,7 +68,9 @@ def create_user(user: createUser):
         with conn.cursor() as cur:
             cur.execute('INSERT INTO users (name, email, encrypted_password, created_at, updated_at) VALUES (%s, %s, %s, %s, %s)', (user.name, user.email, encrypted_password, dt, dt))
         conn.commit()
-    return {"user": user}
+    # sessionIdは本当はもう少し凝ったロジックで生成してストレージに保存したいけどとりあえずこの実装
+    sessionId = base64.b64encode(user.email.encode())
+    return {'sessionId': sessionId}
 
 @app.post("/login")
 def login(user: loginUser):
@@ -81,6 +83,8 @@ def login(user: loginUser):
                 result = cur.fetchall()
         if len(result) == 0:
             raise HTTPException(status_code=401, detail="User not exists")
-        return {'sessionId': 'sessionId'}
+        # sessionIdは本当はもう少し凝ったロジックで生成してストレージに保存したいけどとりあえずこの実装
+        sessionId = base64.b64encode(user.email.encode())
+        return {'sessionId': sessionId}
     except:
         return {'errMessage': 'login failure'}
