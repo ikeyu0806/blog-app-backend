@@ -76,13 +76,13 @@ def create_user(user: createUser):
 def login(user: loginUser):
     try:
         encrypted_password = hashlib.sha256(user.password.encode('utf-8')).hexdigest()
-
         with db.get_connection() as conn:
             with conn.cursor() as cur:
-                cur.execute('SELECT * FROM USERS WHERE(email = %s AND encrypted_password = %s)', (user.email, encrypted_password))
+                cur.execute('SELECT * FROM users WHERE email = %s AND encrypted_password = %s LIMIT 1', (user.email, encrypted_password))
                 result = cur.fetchall()
         if len(result) == 0:
             raise HTTPException(status_code=401, detail="User not exists")
+
         # sessionIdは本当はもう少し凝ったロジックで生成してストレージに保存したいけどとりあえずこの実装
         sessionId = base64.b64encode(user.email.encode())
         return {'sessionId': sessionId}
