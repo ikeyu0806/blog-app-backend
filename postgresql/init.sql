@@ -12,7 +12,7 @@ CREATE TABLE IF NOT EXISTS posts (
 CREATE TABLE IF NOT EXISTS users (
   id serial NOT NULL,
   name VARCHAR(50) NOT NULL,
-  email VARCHAR(50) NOT NULL,
+  email VARCHAR(50) NOT NULL UNIQUE,
   profile VARCHAR(400),
   encrypted_password VARCHAR(1000) NOT NULL,
   authority_classification INT,
