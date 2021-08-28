@@ -52,10 +52,10 @@ def create_post(post: Post):
 def posts():
     with db.get_connection() as conn:
         with conn.cursor() as cur:
-            cur.execute('SELECT * FROM POSTS')
+            cur.execute('SELECT posts.id, posts.title, posts.content, users.name as user_name  FROM posts left outer join users on posts.user_id = users.id')
             result = cur.fetchall()
 
-    key = ["id", "title", "content"]
+    key = ["id", "title", "content", "user_name"]
     result = [dict(zip(key, post)) for post in result]
 
     return {'posts': result}
